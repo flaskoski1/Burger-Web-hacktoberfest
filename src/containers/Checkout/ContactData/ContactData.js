@@ -4,6 +4,7 @@ import classes from "./ContactData.css";
 import axios from "../../../axios-orders";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
+import { connect } from "react-redux";
 
 class ContactData extends Component {
   state = {
@@ -102,7 +103,7 @@ class ContactData extends Component {
         formElementIdentifier
       ].value;
     const order = {
-      ingredients: this.props.ingredients,
+      ingredients: this.props.ings,
       price: this.props.price,
       orderData: formData
       // customer: {
@@ -139,6 +140,16 @@ class ContactData extends Component {
     if (rules.maxLength) {
       isValid = value.length <= rules.minLength && isValid;
     }
+    if (rules.isEmail) {
+      const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+      isValid = pattern.test(value) && isValid;
+    }
+
+    if (rules.isNumeric) {
+      const pattern = /^\d+$/;
+      isValid = pattern.test(value) && isValid;
+    }
+
     return isValid;
   }
   inputChangedHandler = (event, inputIdentifier) => {
@@ -248,8 +259,13 @@ class ContactData extends Component {
     );
   }
 }
-
-export default ContactData;
+const mapStateToProps = state => {
+  return {
+    ings: state.ingredients,
+    price: state.totalPrice
+  };
+};
+export default connect(mapStateToProps)(ContactData);
 // class ContactData extends Component {
 //   state = {
 //     // name: "",
