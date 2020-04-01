@@ -2,12 +2,24 @@ import React, { Component } from "react";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import Layout from "./hoc/Layout/Layout";
 import BurgerBuilder from "../src/containers/BurgerBuilder/BurgerBuilder";
-import Checkout from "../src/containers/Checkout/Checkout";
-import Orders from "../src/containers/Orders/Orders";
-import Auth from "../src/containers/Auth/Auth";
+// import Checkout from "../src/containers/Checkout/Checkout";
+// import Orders from "../src/containers/Orders/Orders";
+// import Auth from "../src/containers/Auth/Auth";
 import Logout from "../src/containers/Auth/Logout/Logout";
 import { connect } from "react-redux";
 import * as actions from "../src/store/actions/index";
+import asyncComponent from "../src/hoc/asyncComponent/asyncComponent";
+
+const asyncCheckout = asyncComponent(() => {
+  return import("../src/containers/Checkout/Checkout");
+});
+const asyncOrders = asyncComponent(() => {
+  return import("../src/containers/Orders/Orders");
+});
+const asyncAuth = asyncComponent(() => {
+  return import("../src/containers/Auth/Auth");
+});
+
 class App extends Component {
   componentDidMount() {
     this.props.onTryAutoSignup();
@@ -15,7 +27,7 @@ class App extends Component {
   render() {
     let routes = (
       <Switch>
-        <Route path="/auth" component={Auth} />
+        <Route path="/auth" component={asyncAuth} />
         <Route path="/" exact component={BurgerBuilder} />
         <Redirect to="/" />
       </Switch>
@@ -24,10 +36,10 @@ class App extends Component {
       routes = (
         <Switch>
           {" "}
-          <Route path="/checkout" component={Checkout} />
-          <Route path="/orders" component={Orders} />
+          <Route path="/checkout" component={asyncCheckout} />
+          <Route path="/orders" component={asyncOrders} />
           <Route path="/logout" component={Logout} />
-          <Route path="/auth" component={Auth} />
+          <Route path="/auth" component={asyncAuth} />
           <Route path="/" exact component={BurgerBuilder} />
           <Redirect to="/" />
         </Switch>
