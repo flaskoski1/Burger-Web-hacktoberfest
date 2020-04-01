@@ -38,7 +38,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.PURCHASE_INIT:
       return purchaseInit(state, action);
     case actionTypes.PURCHASE_BURGER_START:
-      purchaseBurgerStart(state, action);
+      return purchaseBurgerStart(state, action);
     case actionTypes.PURCHASE_BURGER_SUCCESS:
       return purchaseBurgerSuccess(state, action);
     case actionTypes.PURCHASE_BURGER_FAIL:
