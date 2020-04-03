@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import Button from "../../../components/UI/Button/Button";
 import classes from "./ContactData.css";
 import axios from "../../../axios-orders";
@@ -8,105 +8,103 @@ import { connect } from "react-redux";
 import * as actions from "../../../store/actions/index";
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import { updateObject, checkValidity } from "../../../shared/utility";
-class ContactData extends Component {
-  state = {
-    orderForm: {
-      name: {
-        elementType: "input",
-        elementConfig: {
-          type: "text",
-          placeholder: "Your Name"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touched: false
+const contactData = props => {
+  // state = {
+  //   orderForm: {
+  const [orderForm, setOrderForm] = useState({
+    name: {
+      elementType: "input",
+      elementConfig: {
+        type: "text",
+        placeholder: "Your Name"
       },
-      street: {
-        elementType: "input",
-        elementConfig: {
-          type: "text",
-          placeholder: "Street"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touched: false
+      value: "",
+      validation: {
+        required: true
       },
-      zipCode: {
-        elementType: "input",
-        elementConfig: {
-          type: "text",
-          placeholder: "ZIP Code"
-        },
-        value: "",
-        validation: {
-          required: true,
-          minLength: 5,
-          maxLength: 5
-        },
-        valid: false,
-        touched: false
-      },
-      country: {
-        elementType: "input",
-        elementConfig: {
-          type: "text",
-          placeholder: "Country"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touched: false
-      },
-      email: {
-        elementType: "input",
-        elementConfig: {
-          type: "email",
-          placeholder: "Your E-Mail"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touched: false
-      },
-      deliveryMethod: {
-        elementType: "select",
-        elementConfig: {
-          options: [
-            { value: "fastest", displayValue: "Fastest" },
-            { value: "cheapest", displayValue: "Cheapest" }
-          ]
-        },
-        validation: {},
-        value: "fastest",
-        valid: true
-      }
+      valid: false,
+      touched: false
     },
-    formIsValid: false
-  };
+    street: {
+      elementType: "input",
+      elementConfig: {
+        type: "text",
+        placeholder: "Street"
+      },
+      value: "",
+      validation: {
+        required: true
+      },
+      valid: false,
+      touched: false
+    },
+    zipCode: {
+      elementType: "input",
+      elementConfig: {
+        type: "text",
+        placeholder: "ZIP Code"
+      },
+      value: "",
+      validation: {
+        required: true,
+        minLength: 5,
+        maxLength: 5
+      },
+      valid: false,
+      touched: false
+    },
+    country: {
+      elementType: "input",
+      elementConfig: {
+        type: "text",
+        placeholder: "Country"
+      },
+      value: "",
+      validation: {
+        required: true
+      },
+      valid: false,
+      touched: false
+    },
+    email: {
+      elementType: "input",
+      elementConfig: {
+        type: "email",
+        placeholder: "Your E-Mail"
+      },
+      value: "",
+      validation: {
+        required: true
+      },
+      valid: false,
+      touched: false
+    },
+    deliveryMethod: {
+      elementType: "select",
+      elementConfig: {
+        options: [
+          { value: "fastest", displayValue: "Fastest" },
+          { value: "cheapest", displayValue: "Cheapest" }
+        ]
+      },
+      validation: {},
+      value: "fastest",
+      valid: true
+    }
+  });
+  const [formIsValid, setFormIsValid] = useState(false);
 
-  orderHandler = event => {
+  const orderHandler = event => {
     event.preventDefault();
     // console.log(this.props.ingredients);
     const formData = {};
-    for (let formElementIdentifier in this.state.orderForm)
-      formData[formElementIdentifier] = this.state.orderForm[
-        formElementIdentifier
-      ].value;
+    for (let formElementIdentifier in orderForm)
+      formData[formElementIdentifier] = orderForm[formElementIdentifier].value;
     const order = {
-      ingredients: this.props.ings,
-      price: this.props.price,
+      ingredients: props.ings,
+      price: props.price,
       orderData: formData,
-      userId: this.props.userId
+      userId: props.userId
       // customer: {
       //   name: "Max Schwarzmuller",
       //   address: {
@@ -118,7 +116,7 @@ class ContactData extends Component {
       // },
       // deliveryMethod: "fastest"
     };
-    this.props.onOrderBurger(order, this.props.token);
+    props.onOrderBurger(order, props.token);
   };
   // premesteno vo shared/utility kako edna funkcija sho se povikuva na povekje mesta
   // checkValidity(value, rules) {
@@ -148,28 +146,27 @@ class ContactData extends Component {
 
   //   return isValid;
   // }
-  inputChangedHandler = (event, inputIdentifier) => {
+  const inputChangedHandler = (event, inputIdentifier) => {
     // console.log(event.target.value, "(event target value)");
 
-    const updatedFormElement = updateObject(
-      this.state.orderForm[inputIdentifier],
-      {
-        value: event.target.value,
-        valid: checkValidity(
-          event.target.value,
-          this.state.orderForm[inputIdentifier].validation
-        ),
-        touched: true
-      }
-    );
-    const updatedOrderForm = updateObject(this.state.orderForm, {
+    const updatedFormElement = updateObject(orderForm[inputIdentifier], {
+      value: event.target.value,
+      valid: checkValidity(
+        event.target.value,
+        orderForm[inputIdentifier].validation
+      ),
+      touched: true
+    });
+    const updatedOrderForm = updateObject(orderForm, {
       [inputIdentifier]: updatedFormElement
     });
     let formIsValid = true;
     for (let inputIdentifier in updatedOrderForm) {
       formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid;
     }
-    this.setState({ orderForm: updatedOrderForm, formIsValid: formIsValid });
+    setOrderForm(updatedOrderForm);
+    setFormIsValid(formIsValid);
+    // this.setState({ orderForm: updatedOrderForm, formIsValid: formIsValid });
     // console.log(updatedFormElement, "updatedFormElement");
 
     // console.log(event.target.value, "value");
@@ -186,19 +183,19 @@ class ContactData extends Component {
   //   updatedOrderForm[inputIdentifier] = updatedFormElement;
   //   this.setState({ orderForm: updatedOrderForm });
   // };
-  render() {
-    const formElementsArray = [];
-    for (let key in this.state.orderForm) {
-      formElementsArray.push({
-        id: key,
-        config: this.state.orderForm[key]
-      });
-    }
-    // console.log(this.props.price, "price");
-    // console.log(formElementsArray, "element");
-    let form = (
-      <form onSubmit={this.orderHandler}>
-        {/* <Input
+  // render() {
+  const formElementsArray = [];
+  for (let key in orderForm) {
+    formElementsArray.push({
+      id: key,
+      config: orderForm[key]
+    });
+  }
+  // console.log(this.props.price, "price");
+  // console.log(formElementsArray, "element");
+  let form = (
+    <form onSubmit={orderHandler}>
+      {/* <Input
           // inputtype="input"
           // type="text"
           // name="name"
@@ -207,20 +204,20 @@ class ContactData extends Component {
           elementConfig="..."
           value="..."
         ></Input> */}
-        {formElementsArray.map(formElement => (
-          <Input
-            key={formElement.id}
-            elementType={formElement.config.elementType}
-            elementConfig={formElement.config.elementConfig}
-            value={formElement.config.value}
-            invalid={!formElement.config.valid}
-            shouldValidate={formElement.config.validation}
-            touched={formElement.config.touched}
-            changed={event => this.inputChangedHandler(event, formElement.id)}
-          />
-        ))}
+      {formElementsArray.map(formElement => (
+        <Input
+          key={formElement.id}
+          elementType={formElement.config.elementType}
+          elementConfig={formElement.config.elementConfig}
+          value={formElement.config.value}
+          invalid={!formElement.config.valid}
+          shouldValidate={formElement.config.validation}
+          touched={formElement.config.touched}
+          changed={event => inputChangedHandler(event, formElement.id)}
+        />
+      ))}
 
-        {/* <Input
+      {/* <Input
           inputtype="input"
           type="email"
           name="email"
@@ -238,22 +235,22 @@ class ContactData extends Component {
           name="postal"
           placeholder="Postal Code"
         ></Input> */}
-        <Button btnType="Success" disabled={!this.state.formIsValid}>
-          ORDER
-        </Button>
-      </form>
-    );
-    if (this.props.loading) {
-      form = <Spinner />;
-    }
-    return (
-      <div className={classes.ContactData}>
-        <h4>Enter your Contact Data</h4>
-        {form}
-      </div>
-    );
+      <Button btnType="Success" disabled={!formIsValid}>
+        ORDER
+      </Button>
+    </form>
+  );
+  if (props.loading) {
+    form = <Spinner />;
   }
-}
+  return (
+    <div className={classes.ContactData}>
+      <h4>Enter your Contact Data</h4>
+      {form}
+    </div>
+  );
+};
+
 const mapStateToProps = state => {
   return {
     ings: state.burgerBuilder.ingredients,
@@ -269,10 +266,11 @@ const mapDispatchToProps = dispatch => {
       dispatch(actions.purchaseBurger(orderData, token))
   };
 };
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withErrorHandler(ContactData, axios));
+)(withErrorHandler(contactData, axios));
 // class ContactData extends Component {
 //   state = {
 //     // name: "",

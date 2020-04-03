@@ -17,3 +17,4 @@ const asyncComponent = importComponent => {
   };
 };
 export default asyncComponent;
+//ova ne se koristi pojche, vovedeno vo App.js e React.lazy sho go zamenuva seto ova :D
